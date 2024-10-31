@@ -1,5 +1,5 @@
 import os, torch, sys, joblib
-os.environ["CUDA_VISIBLE_DEVICES"]="2"
+os.environ["CUDA_VISIBLE_DEVICES"]="6"
 import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
@@ -47,8 +47,8 @@ def visualize_attribution_new(inputs, label_attributions_list, concept_attributi
     axes[axes_id].set_title(f'{className}')
     axes_id += 1
 
-    label_threshold = 0.1
-    concept_threshold = 0.005
+    label_threshold = 0.05
+    concept_threshold = 0.001
     for label_attributions, concept_attributions, method_name in zip(label_attributions_list, concept_attributions_list, ["IG", "smoothed IG", "saliency", "smoothed saliency"]):
         label_attribution_image = label_attributions.cpu().detach().numpy().squeeze().transpose(1, 2, 0)
         label_attribution_image = (label_attribution_image - label_attribution_image.min()) / (label_attribution_image.max() - label_attribution_image.min())
@@ -102,7 +102,7 @@ def visualize_attribution_new(inputs, label_attributions_list, concept_attributi
 
         # Plot concept attributions
         for idx, concept_image in enumerate(processed_concept_attributions):
-            axes[axes_id].imshow(concept_image, origin='lower')
+            axes[axes_id].imshow(concept_image)
             axes[axes_id].axis('off')
             axes[axes_id].set_title(f'{concepts_names[idx]}: {concept_predictions[idx].item():.2f}')
             axes_id += 1
@@ -277,7 +277,6 @@ def main(args):
 
                 visualize_attribution_new(inputs_var[0], (labelAttr_ig, labelAttr_ig_smooth, labelAttr_saliency, labelAttr_saliency_smooth), (concepts_attributions_ig, concepts_attributions_ig_smooth, concepts_attributions_saliency, concepts_attributions_saliency_smooth), concepts_names, concepts_predictions, className, predictClass,
                                 path=f"{os.path.join(args.outputDir, path[0].split('/')[-1])}")
-                exit()
                             
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Concepts Validation')
